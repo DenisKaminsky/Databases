@@ -1,4 +1,5 @@
 CREATE DATABASE DenisKaminskyDatabase;
+GO
 
 USE DenisKaminskyDatabase;
 GO
