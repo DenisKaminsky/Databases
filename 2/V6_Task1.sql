@@ -1,23 +1,6 @@
 USE AdventureWorks2012;
 GO
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*Select the earliest employee start date in each department*/
 SELECT d.Name, MIN(e.HireDate) 'StartDate'
 FROM HumanResources.Employee e
