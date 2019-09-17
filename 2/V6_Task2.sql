@@ -1,3 +1,27 @@
+USE AdventureWorks2012;
+GO
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*a) создайте таблицу dbo.Person с такой же структурой как Person.Person,
 кроме полей xml, uniqueidentifier, не включая индексы, ограничения и триггеры;*/
 CREATE TABLE dbo.Person (
