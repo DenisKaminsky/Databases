@@ -4,6 +4,7 @@ GO
 /*a) добавьте в таблицу dbo.Person поле EmailAddress типа nvarchar размерностью 50 символов;*/
 ALTER TABLE dbo.Person 
 ADD EmailAddress NVARCHAR(50) NULL;
+GO
 
 /*b) объявите табличную переменную с такой же структурой как dbo.Person и заполните ее данными 
 из dbo.Person. Поле EmailAddress заполните данными из Person.EmailAddress;*/
