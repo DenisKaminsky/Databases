@@ -1,8 +1,9 @@
 USE AdventureWorks2012;
 GO
 
-/*a) создайте таблицу dbo.Person с такой же структурой как Person.Person,
-кроме полей xml, uniqueidentifier, не включая индексы, ограничения и триггеры;*/
+
+/*a) СЃРѕР·РґР°Р№С‚Рµ С‚Р°Р±Р»РёС†Сѓ dbo.Person СЃ С‚Р°РєРѕР№ Р¶Рµ СЃС‚СЂСѓРєС‚СѓСЂРѕР№ РєР°Рє Person.Person,
+РєСЂРѕРјРµ РїРѕР»РµР№ xml, uniqueidentifier, РЅРµ РІРєР»СЋС‡Р°СЏ РёРЅРґРµРєСЃС‹, РѕРіСЂР°РЅРёС‡РµРЅРёСЏ Рё С‚СЂРёРіРіРµСЂС‹;*/
 CREATE TABLE dbo.Person (
 	BusinessEntityID INT NOT NULL,
 	PersonType NCHAR(2) NOT NULL,
@@ -16,23 +17,23 @@ CREATE TABLE dbo.Person (
 	ModifiedDate DATETIME NOT NULL
 )
 
-/*b) используя инструкцию ALTER TABLE, создайте для таблицы dbo.Person 
-составной первичный ключ из полей BusinessEntityID и PersonType*/
+/*b) РёСЃРїРѕР»СЊР·СѓСЏ РёРЅСЃС‚СЂСѓРєС†РёСЋ ALTER TABLE, СЃРѕР·РґР°Р№С‚Рµ РґР»СЏ С‚Р°Р±Р»РёС†С‹ dbo.Person 
+СЃРѕСЃС‚Р°РІРЅРѕР№ РїРµСЂРІРёС‡РЅС‹Р№ РєР»СЋС‡ РёР· РїРѕР»РµР№ BusinessEntityID Рё PersonType*/
 ALTER TABLE dbo.Person
 ADD CONSTRAINT PK_Person PRIMARY KEY (BusinessEntityID, PersonType);
 
-/*c) используя инструкцию ALTER TABLE, создайте для таблицы dbo.Person ограничение для 
-поля PersonType, чтобы заполнить его можно было только значениями из списка ‘GC’,’SP’,’EM’,’IN’,’VC’,’SC’;*/
+/*c) РёСЃРїРѕР»СЊР·СѓСЏ РёРЅСЃС‚СЂСѓРєС†РёСЋ ALTER TABLE, СЃРѕР·РґР°Р№С‚Рµ РґР»СЏ С‚Р°Р±Р»РёС†С‹ dbo.Person РѕРіСЂР°РЅРёС‡РµРЅРёРµ РґР»СЏ 
+РїРѕР»СЏ PersonType, С‡С‚РѕР±С‹ Р·Р°РїРѕР»РЅРёС‚СЊ РµРіРѕ РјРѕР¶РЅРѕ Р±С‹Р»Рѕ С‚РѕР»СЊРєРѕ Р·РЅР°С‡РµРЅРёСЏРјРё РёР· СЃРїРёСЃРєР° вЂGCвЂ™,вЂ™SPвЂ™,вЂ™EMвЂ™,вЂ™INвЂ™,вЂ™VCвЂ™,вЂ™SCвЂ™;*/
 ALTER TABLE dbo.Person
 ADD CONSTRAINT CheckType CHECK (PersonType IN ('GC','SP','EM','IN','VC','SC'));
 
-/*d) используя инструкцию ALTER TABLE, создайте для таблицы dbo.Person ограничение 
-DEFAULT для поля Title, задайте значение по умолчанию ‘n/a’;*/
+/*d) РёСЃРїРѕР»СЊР·СѓСЏ РёРЅСЃС‚СЂСѓРєС†РёСЋ ALTER TABLE, СЃРѕР·РґР°Р№С‚Рµ РґР»СЏ С‚Р°Р±Р»РёС†С‹ dbo.Person РѕРіСЂР°РЅРёС‡РµРЅРёРµ 
+DEFAULT РґР»СЏ РїРѕР»СЏ Title, Р·Р°РґР°Р№С‚Рµ Р·РЅР°С‡РµРЅРёРµ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ вЂn/aвЂ™;*/
 ALTER TABLE dbo.Person
 ADD CONSTRAINT DF_Person_Title DEFAULT 'n/a' FOR Title;
 
-/*e) заполните таблицу dbo.Person данными из Person.Person только для тех лиц, для которых тип 
-контакта в таблице ContactType определен как ‘Owner’. Поле Title заполните значениями по умолчанию;*/
+/*e) Р·Р°РїРѕР»РЅРёС‚Рµ С‚Р°Р±Р»РёС†Сѓ dbo.Person РґР°РЅРЅС‹РјРё РёР· Person.Person С‚РѕР»СЊРєРѕ РґР»СЏ С‚РµС… Р»РёС†, РґР»СЏ РєРѕС‚РѕСЂС‹С… С‚РёРї 
+РєРѕРЅС‚Р°РєС‚Р° РІ С‚Р°Р±Р»РёС†Рµ ContactType РѕРїСЂРµРґРµР»РµРЅ РєР°Рє вЂOwnerвЂ™. РџРѕР»Рµ Title Р·Р°РїРѕР»РЅРёС‚Рµ Р·РЅР°С‡РµРЅРёСЏРјРё РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ;*/
 INSERT INTO dbo.Person (
 	BusinessEntityID, 
 	PersonType, 
@@ -58,7 +59,7 @@ INNER JOIN Person.BusinessEntityContact bc ON bc.PersonID = p.BusinessEntityID
 INNER JOIN Person.ContactType c ON c.ContactTypeID = bc.ContactTypeID
 WHERE c.Name = 'Owner';
 
-/*f) измените размерность поля Title, уменьшите размер поля до 4-ти символов, 
-также запретите добавлять null значения для этого поля.*/
+/*f) РёР·РјРµРЅРёС‚Рµ СЂР°Р·РјРµСЂРЅРѕСЃС‚СЊ РїРѕР»СЏ Title, СѓРјРµРЅСЊС€РёС‚Рµ СЂР°Р·РјРµСЂ РїРѕР»СЏ РґРѕ 4-С‚Рё СЃРёРјРІРѕР»РѕРІ, 
+С‚Р°РєР¶Рµ Р·Р°РїСЂРµС‚РёС‚Рµ РґРѕР±Р°РІР»СЏС‚СЊ null Р·РЅР°С‡РµРЅРёСЏ РґР»СЏ СЌС‚РѕРіРѕ РїРѕР»СЏ.*/
 ALTER TABLE dbo.Person
 ALTER COLUMN Title NVARCHAR(4) NOT NULL;
