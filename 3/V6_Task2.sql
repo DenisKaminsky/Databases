@@ -29,63 +29,45 @@ CREATE TABLE dbo.#Person (
 значениями из таблицы Sales.SalesTerritory. Посчитайте общую сумму продаж (SalesYTD) 
 для каждой группы территорий (Group) в таблице Sales.SalesTerritory и заполните этими значениями поле 
 TotalGroupSales. Подсчет суммы продаж осуществите в Common Table Expression (CTE).*/
-WITH EMP AS (SELECT
+WITH SALES_CTE AS (SELECT
+	st."Group",
+	SUM(st.SalesYTD) TotalGroupSales
+FROM Sales.SalesTerritory st
+GROUP BY
+	st."Group")
+
+INSERT INTO dbo.#Person (
+	BusinessEntityID, 
+	PersonType, 
+	NameStyle,
+	Title,
+	FirstName, 
+	MiddleName, 
+	LastName, 
+	Suffix,
+	EmailPromotion, 
+	ModifiedDate,
+	TotalGroupSales,
+	SalesYTD
+) SELECT
 	p.BusinessEntityID, 
 	p.PersonType, 
 	p.NameStyle,
 	p.Title,
 	p.FirstName, 
 	p.MiddleName, 
-	p.LastName , 
+	p.LastName, 
 	p.Suffix,
 	p.EmailPromotion, 
 	p.ModifiedDate,
-	SUM(st.SalesYTD) AS TotalGroupSales
+	t.TotalGroupSales,
+	st.SalesYTD
 FROM dbo.Person p
-INNER JOIN Person.BusinessEntityAddress bea ON bea.BusinessEntityID = p.BusinessEntityID
-INNER JOIN Person.Address a ON a.AddressID = bea.AddressID
-INNER JOIN Person.StateProvince sp ON sp.StateProvinceID = a.StateProvinceID
-INNER JOIN Sales.SalesTerritory st ON st.CountryRegionCode = sp.CountryRegionCode
-GROUP BY
-	p.BusinessEntityID, 
-	p.PersonType, 
-	p.NameStyle,
-	p.Title,
-	p.FirstName, 
-	p.MiddleName, 
-	p.LastName , 
-	p.Suffix,
-	p.EmailPromotion, 
-	p.ModifiedDate ;)
+INNER JOIN Sales.Customer c ON c.PersonID = p.BusinessEntityID
+INNER JOIN Sales.SalesTerritory st ON st.TerritoryID = c.TerritoryID
+INNER JOIN SALES_CTE t ON st."Group" = t."Group";
 
-SELECT
-	p.BusinessEntityID, 
-	p.PersonType, 
-	p.NameStyle,
-	p.Title,
-	p.FirstName, 
-	p.MiddleName, 
-	p.LastName , 
-	p.Suffix,
-	p.EmailPromotion, 
-	p.ModifiedDate
-FROM dbo.Person p
-/*INNER JOIN Person.BusinessEntityAddress bea ON bea.BusinessEntityID = p.BusinessEntityID*/
-/*INNER JOIN Person.Address a ON a.AddressID = bea.AddressID
-INNER JOIN Person.StateProvince sp ON sp.StateProvinceID = a.StateProvinceID
-INNER JOIN Person.CountryRegion cr ON cr.CountryRegionCode = sp.CountryRegionCode
-INNER JOIN Sales.SalesTerritory st ON st.CountryRegionCode = cr.CountryRegionCode*/
-GROUP BY
-	p.BusinessEntityID, 
-	p.PersonType, 
-	p.NameStyle,
-	p.Title,
-	p.FirstName, 
-	p.MiddleName, 
-	p.LastName , 
-	p.Suffix,
-	p.EmailPromotion, 
-	p.ModifiedDate
+SELECT * FROM dbo.#Person;
 
 /*d) удалите из таблицы dbo.Person строки, где EmailPromotion = 2*/
 DELETE FROM dbo.Person WHERE EmailPromotion = 2;
@@ -96,3 +78,39 @@ DELETE FROM dbo.Person WHERE EmailPromotion = 2;
 Если строка присутствует во временной таблице, но не существует в target, добавьте строку 
 в dbo.Person. Если в dbo.Person присутствует такая строка, которой не существует
 во временной таблице, удалите строку из dbo.Person.*/
+MERGE INTO dbo.Person dest
+USING dbo.#Person src
+ON dest.BusinessEntityID = src.BusinessEntityID
+WHEN MATCHED THEN UPDATE SET 
+	dest.TotalGroupSales = src.TotalGroupSales,
+	dest.SalesYTD = src.SalesYTD
+WHEN NOT MATCHED BY TARGET THEN	INSERT (
+	BusinessEntityID, 
+	PersonType, 
+	NameStyle,
+	Title,
+	FirstName, 
+	MiddleName, 
+	LastName, 
+	Suffix,
+	EmailPromotion, 
+	ModifiedDate,
+	TotalGroupSales,
+	SalesYTD)
+VALUES(
+	src.BusinessEntityID, 
+	src.PersonType, 
+	src.NameStyle,
+	src.Title,
+	src.FirstName, 
+	src.MiddleName, 
+	src.LastName, 
+	src.Suffix,
+	src.EmailPromotion, 
+	src.ModifiedDate,
+	src.TotalGroupSales,
+	src.SalesYTD)
+WHEN NOT MATCHED BY SOURCE THEN DELETE;
+GO
+
+SELECT * FROM dbo.Person;
